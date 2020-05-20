@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="shortcut icon" href="https://scontent-iad3-1.xx.fbcdn.net/v/t1.15752-9/93785628_224755311931052_29844623933308928_n.png?_nc_cat=105&_nc_sid=b96e70&_nc_ohc=E-7bPPBlhTkAX-0DEON&_nc_ht=scontent-iad3-1.xx&oh=9fde64a55145ef30bd0f1872c860a4f5&oe=5EC12C51">
+    {% if title %}
+        <title>CovAid - {{ title }}</title>
+    {% else %}
+        <title>CovAid</title>
+    {% endif %}
+</head>
+<body>
+    <header class="mb-3">
+      <nav class="navbar navbar-expand-lg navbar-dark" style = "background-color: #202020" role="navigation" >
+        <div class="container">
+          <a class="navbar-left mr-3 mt-2 mb-2" href="{{ url_for('home') }}">
+            <img src="https://scontent-iad3-1.xx.fbcdn.net/v/t1.15752-9/93073071_2532633556974943_2527884842662625280_n.png?_nc_cat=109&_nc_sid=b96e70&_nc_ohc=HjsK_YmY_M8AX_e1yIn&_nc_ht=scontent-iad3-1.xx&oh=6a5cc1d84a911af0a861fc668ca22f84&oe=5EB4A6B3" width="99.5" height="30" class="d-inline-block align-top" alt="">
+          </a>
+            <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#exCollapsingNavbar">
+                &#9776;
+            </button>
+            <div class="collapse navbar-collapse" id="exCollapsingNavbar">
+                <ul class="nav navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
+                        <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link">About</a></li>
+                        <li class="nav-item"><a href="{{ url_for('requests') }}" class="nav-link">Request</a></li>
+                    {% else %}
+                        <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link">Home</a></li>
+                        <li class="nav-item"><a href="{{ url_for('about') }}" class="nav-link">About</a></li>
+                    {% endif %}
+                </ul>
+                <ul class="nav navbar-nav flex-row justify-content-between ml-auto">
+                    <li class="nav-item order-2 order-md-1"><a href="#" class="nav-link" title="settings"><i class="fa fa-cog fa-fw fa-lg"></i></a></li>
+                    <li class="dropdown order-1">
+                        {% if current_user.is_authenticated %}
+                            <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
+                        {% else %}
+                            <li class="nav-item"><a href="{{ url_for('login') }}" class="nav-link">Login</a></li>
+                            <li class="nav-item"><a href="{{ url_for('register') }}" class="nav-link">Register</a></li>
+                        {% endif %}
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    </header>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    {% block content %}{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>

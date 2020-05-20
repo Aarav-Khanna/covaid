@@ -1,0 +1,203 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="row mb-4">
+        <div class="card">
+          <img src="" id="requests-image" class="card-img-top">
+          <div class="card-body w-100">
+            <h3 class="card-title">Make a Request</h3>
+            <p class="card-text">Fill out a request form if you are in need of something and you will be connected with a driver.</p>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#requestMaker">
+              Make a Request
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="card mb-5 w-100">
+          <img src="" id="requests-image" class="card-img-top">
+          <div id="your-requests" class="card-body">
+            <h3 class="card-title">Your Requests</h3>
+            <ul class="list-group">
+              {% if user_requests %}
+                {% for request in user_requests %}
+                  {% if request.status != "Delivered" %}
+                    <a class="list-group-item">
+                      <div class="row">
+                        <div class="col">
+                          {{ request.item_name }}
+                        </div>
+                        <div class="col">
+                          <span style="float: right;" class="badge badge-secondary badge-pill mb-2">{{ request.quantity }}</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col">
+                          <small class="text-muted">{{ request.instruct }}</small>
+                        </div>
+                        <div class="col">
+                          <small class="badge badge-info mb-2" style="float: right;">{{ request.status }}</small>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col">
+                          {% if request.status == 'In Progress' %}
+                            <form action="{{ url_for('requests') }}" method="POST">
+                              <button class="btn btn-primary btn-sm py-0" style="font-size: 0.8em; float: right;" name="delivered" type="submit" value="{{ request.id }}">Delivered?</button>
+                            </form>
+                          {% else %}
+                          {% endif %}
+                        </div>
+                      </div>
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                  <p>You do not have any requests. Fill out your first request above!</p>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <!-- where all the right column stuff goes -->
+      <div class="card mb-5 w-100">
+        <div id="requests-near" class="card-body">
+          <h3 class="card-title">Requests Near: </h3>
+          <p class="card-text">{{current_user.street}}, {{current_user.city}}</p>
+          <ul class="list-group">
+            {% if all_users_requests %}
+              {% for request_tuple in all_users_requests|sort(attribute='3') %}
+                <a class="list-group-item">
+                    <div class="row">
+                      <div class="col">
+                        {{ request_tuple[0].item_name }}
+                      </div>
+                      <div class="col">
+                        <span style="float: right;" class="badge badge-secondary badge-pill">{{ request_tuple[0].quantity }}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <small class="text-muted">{{ request_tuple[1] }} </small>       
+                      </div>
+                      <div class="col">
+                        <button type="button" style = "float: right; max-width:135px; width: 100%;" class="btn btn-primary btn-sm mb-2" data-toggle="modal" data-target="#requestView" data-name="{{ request_tuple[0].item_name }}"
+                          data-quantity="{{ request_tuple[0].quantity }}" data-instruct = "{{ request_tuple[0].instruct }}" data-miles="{{ request_tuple[1] }}" data-time = "{{ request_tuple[2] }}"
+                          data-username = "{{ request_tuple[0].request.fullname }}" data-street = "{{ request_tuple[0].request.street }}" data-city = "{{ request_tuple[0].request.city }}">
+                          View this Request
+                        </button>
+                      </div>
+                    </div>
+                    <div class="row justify-content-end">
+                        <div class="col">
+                        </div>
+                        <div class="col">
+                          <form action="{{ url_for('requests') }}" method="POST">
+                            <button class="btn btn-primary btn-sm" name="accept" type="submit" value="{{ request_tuple[0].id }}" style="float: right; max-width:135px; width: 100%;">Accept Request</button>
+                          </form>
+                        </div>
+                    </div>
+                </a>
+
+              {% endfor %}
+            {% else %}
+                <p>There are currently no requests near you. Keep refreshing the page to find new ones!</p>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="requestMaker" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLongTitle">Make a Request</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form method="POST" action="/requests">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+              {{ form.item.label(class="form-control-label") }}
+              {{ form.item(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+              {{ form.quantity.label(class="form-control-label") }}
+              {{ form.quantity(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+              {{ form.instruct.label(class="form-control-label") }}
+              {{ form.instruct(class="form-control form-control-lg") }}
+            </div>
+            <div class="form-group">
+              {{ form.send(class="btn btn-outline-info") }}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Pop up window for fufilling requests -->
+  <div class="modal fade" id="requestView" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLongTitle">Request View</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h6> Item Name: </h6>
+          <p class="item-name"> Error: Could not display </p>
+          <h6> Quantity: </h6>
+          <p class="item-quantity"> Error: Could not display </p>
+          <h6> Special Instructions: </h6>
+          <p class="item-instruct"> Error: Could not display </p>
+          <div class="dropdown-divider"></div>
+          <h6> Distance: </h6>
+          <p class="item-miles"> Error: Could not display </p>
+          <h6> Estimated Time: </h6>
+          <p class="item-time"> Error: Could not display </p>
+          <h6> Name:  </h6>
+          <p class = "item-username"> Error: Could not display </p>
+          <h6> Address:  </h6>
+          <p class = "item-address"> Error: Could not display </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('#requestView').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var item_name = button.data('name') // Extract info from data-* attributes
+    var quantity = button.data('quantity')
+    var instruct = button.data('instruct')
+    var miles = button.data('miles')
+    var time = button.data('time')
+    var username = button.data('username')
+    var street = button.data('street')
+    var city = button.data('city')
+    // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    var modal = $(this)
+    modal.find('.item-name').text(item_name)
+    modal.find('.item-quantity').text(quantity)
+    modal.find('.item-instruct').text(instruct)
+    modal.find('.item-miles').text(miles)
+    modal.find('.item-time').text(time)
+    modal.find('.item-username').text(username)
+    modal.find('.item-address').text(street + ', ' + city)
+    //modal.find('.modal-body input').val(recipient)
+  })
+</script>
+{% endblock content %}

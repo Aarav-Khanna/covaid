@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block content %}
+  <div id="home-page-heading" class="row justify-content-center">
+    <div class="col align-self-center">
+      <h1 class="display-1" style="text-align:center"> 
+          CovAid
+      </h1>
+      <p class="lead" style="text-align:center">
+          Connecting volunteers to those in need during the COVID-19 outbreak using AI-driven intelligence
+      </p>
+      <div style="text-align:center;">
+        <a id="get-started" href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started</a>
+      </div>
+    </div>
+  </div>
+<div id="home-page-carousel">
+  <div class="slideshow-container">
+    
+    <div class="mySlides">
+      <img class="h-100 w-100" src="https://static01.nyt.com/images/2020/03/04/nyregion/04nytoday/merlin_169917465_0a55e41f-d5cb-4da2-89fe-21b2f39ea641-superJumbo.jpg?quality=90&auto=webp" alt="First slide">
+    </div>
+
+    <div class="mySlides">
+      <img class="h-100 w-100" src="https://d.newsweek.com/en/full/1570569/costco-california-coronavirus-february-4-2020.jpg" alt="Second slide">
+    </div>
+
+    <div class="mySlides">
+      <img class="h-100 w-100" src="https://static01.nyt.com/images/2020/03/26/opinion/26weissWeb/26weissWeb-mobileMasterAt3x.jpg" alt="Third slide">
+    </div>
+  </div>
+</div>
+
+<div style="text-align:center">
+  <span class="dot"></span> 
+  <span class="dot"></span> 
+  <span class="dot"></span> 
+</div>
+
+<script>
+var slideIndex = 0;
+showSlides();
+
+function showSlides() {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("dot");
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";  
+  }
+  slideIndex++;
+  if (slideIndex > slides.length) {slideIndex = 1}    
+  for (i = 0; i < dots.length; i++) {
+    dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " active";
+  setTimeout(showSlides, 4000); // Change image every 4 seconds
+}
+</script>
+{% endblock content %}
